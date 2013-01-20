@@ -28,6 +28,8 @@
 @property BOOL isShowingKeyboard;
 @property CGFloat keyboardHeight;
 
+@property (nonatomic, assign, readwrite) BOOL showing;
+
 @end
 
 @implementation OLGhostAlertView
@@ -185,6 +187,8 @@
 
 - (void)show
 {
+    self.showing = YES;
+    
     CGRect fullscreenRect = [self getScreenBoundsForCurrentOrientation];
     
     UIWindow *window = [[[UIApplication sharedApplication] delegate] window];
@@ -223,10 +227,15 @@
 
 - (void)hide
 {
+    self.showing = NO;
+    
     [UIView animateWithDuration:0.5 animations:^{
         self.alpha = 0;
     } completion:^(BOOL finished){
         [self removeFromSuperview];
+        if ([self.delegate respondsToSelector:@selector(alertViewDidHide:)]) {
+            [self.delegate alertViewDidHide:self];
+        }
     }];
 }
 
